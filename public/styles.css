@@ -70,6 +70,13 @@ header {
     margin-bottom: 20px;
 }
 
+.daterange-container label {
+    padding-top: 10px;
+    padding-right: 10px;
+
+}
+
+
 .daterange-container button {
     margin-left: 10px;
     padding: 10px 20px;
