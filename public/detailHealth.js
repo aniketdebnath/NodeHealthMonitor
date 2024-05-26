@@ -108,33 +108,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 startDate: moment().startOf('day'),
                 endDate: moment().endOf('day'),
                 locale: {
-                    format: 'YYYY-MM-DD HH:mm:ss'
+                    format: 'YYYY-MM-DD HH:mm:ss',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 }
-            }, function(start, end, label) {
+            }, function(start, end) {
                 const startDate = start.toISOString();
                 const endDate = end.toISOString();
                 console.log(`New date range selected: ${startDate} to ${endDate}`);
 
-                const filteredLabels = labels.filter(label => label >= startDate && label <= endDate);
-                const filteredHeartRates = heartRates.filter((value, index) => labels[index] >= startDate && labels[index] <= endDate);
-                const filteredOxygenLevels = oxygenLevels.filter((value, index) => labels[index] >= startDate && labels[index] <= endDate);
+                // Filter data based on the selected date range
+                const filteredData = data.filter(item => {
+                    const date = new Date(item.DateTime).toISOString();
+                    return date >= startDate && date <= endDate;
+                });
 
+                // Clear existing data
+                const filteredLabels = filteredData.map(item => new Date(item.DateTime).toISOString());
+                const filteredHeartRates = filteredData.map(item => item.HealthData.HeartRate);
+                const filteredOxygenLevels = filteredData.map(item => item.HealthData.OxygenLevel);
+
+                // Update chart data
                 healthChart.data.labels = filteredLabels;
                 healthChart.data.datasets[0].data = filteredHeartRates.map((value, index) => ({ x: filteredLabels[index], y: value }));
                 healthChart.data.datasets[1].data = filteredOxygenLevels.map((value, index) => ({ x: filteredLabels[index], y: value }));
                 healthChart.update();
 
-                // Clear existing table data
+                // Update table data
                 tableBody.innerHTML = '';
-                filteredLabels.forEach((label, index) => {
+                filteredData.forEach(item => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${label}</td>
-                        <td>${filteredHeartRates[index]}</td>
-                        <td>${filteredOxygenLevels[index]}</td>
-                        <td>${data[index].HealthData.AccelerometerData.Ax}</td>
-                        <td>${data[index].HealthData.AccelerometerData.Ay}</td>
-                        <td>${data[index].HealthData.AccelerometerData.Az}</td>
+                        <td>${new Date(item.DateTime).toISOString()}</td>
+                        <td>${item.HealthData.HeartRate}</td>
+                        <td>${item.HealthData.OxygenLevel}</td>
+                        <td>${item.HealthData.AccelerometerData.Ax}</td>
+                        <td>${item.HealthData.AccelerometerData.Ay}</td>
+                        <td>${item.HealthData.AccelerometerData.Az}</td>
                     `;
                     tableBody.appendChild(row);
                 });

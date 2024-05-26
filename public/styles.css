@@ -5,6 +5,8 @@ body, html {
     font-family: 'Arial', sans-serif;
     background: #f4f4f9;
     color: #333;
+    height: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 header {
@@ -54,11 +56,32 @@ header {
     align-items: center;
     padding: 20px;
     margin: 20px auto;
-    width: 90%;
-    max-width: 800px;
+    width: 95%;
+    max-width: 1200px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.10);
+}
+
+.daterange-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 500px !important;
+}
+
+.table-container {
+    width: 100%;
 }
 
 .data-block {
@@ -80,31 +103,31 @@ p {
     color: #666;
 }
 
-/* Table styles */
-table {
+/* Scoped Table styles */
+.table-container table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
 }
 
-table, th, td {
+.table-container table, .table-container th, .table-container td {
     border: 1px solid #ddd;
 }
 
-th, td {
+.table-container th, .table-container td {
     padding: 12px;
     text-align: center;
 }
 
-th {
+.table-container th {
     background-color: #e0f7fa;
     font-weight: bold;
 }
 
-tr:nth-child {
+.table-container tr:nth-child {
     background-color: #b3e5fc;
 }
 
-tr:hover {
+.table-container tr:hover {
     background-color: #81d4fa;
 }
