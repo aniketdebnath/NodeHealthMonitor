@@ -14,8 +14,8 @@ require('./db');  // Ensure your MongoDB connection is established
 app.use(express.static('public'));
 
 // Route to serve detailhealth.html directly
-app.get('/detailhealth.html', (req, res) => {
-    res.sendFile(__dirname + '/public/detailhealth.html');
+app.get('/detailHealth.html', (req, res) => {
+    res.sendFile(__dirname + '/public/detailHealth.html');
 });
 
 // Route to fetch health data from MongoDB
