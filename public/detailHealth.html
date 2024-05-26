@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Data Overview</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@^3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="detailhealth.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">Health Tracker</div>
+            <ul class="nav-links">
+                <li><a href="/">Health Dashboard</a></li>
+                <li><a href="/detailhealth.html">Health Overview</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        <h1>Health Data Overview</h1>
+
+        <div>
+            <label for="daterange">Select Date Range:</label>
+            <input type="text" id="daterange" name="daterange" />
+        </div>
+
+        <h2>Chart</h2>
+        <canvas id="healthChart"></canvas>
+
+        <h2>Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Heart Rate (bpm)</th>
+                    <th>Oxygen Saturation (%)</th>
+                    <th>Accelerometer X</th>
+                    <th>Accelerometer Y</th>
+                    <th>Accelerometer Z</th>
+                </tr>
+            </thead>
+        <tbody id="healthDataTableBody">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/health-data')
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.map(item => new Date(item.DateTime).toISOString());
+                    const heartRates = data.map(item => item.HealthData.HeartRate);
+                    const oxygenLevels = data.map(item => item.HealthData.OxygenLevel);
+
+                    // Populate the table
+                    const tableBody = document.getElementById('healthDataTableBody');
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(item.DateTime).toISOString()}</td>
+                            <td>${item.HealthData.HeartRate}</td>
+                            <td>${item.HealthData.OxygenLevel}</td>
+                            <td>${item.HealthData.AccelerometerData.Ax}</td>
+                            <td>${item.HealthData.AccelerometerData.Ay}</td>
+                            <td>${item.HealthData.AccelerometerData.Az}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    // Create the chart
+                    const ctx = document.getElementById('healthChart').getContext('2d');
+                    let healthChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                label: 'Heart Rate',
+                                data: heartRates.map((value, index) => ({ x: labels[index], y: value })),
+                                borderColor: 'rgb(255, 99, 132)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            }, {
+                                label: 'Oxygen Saturation',
+                                data: oxygenLevels.map((value, index) => ({ x: labels[index], y: value })),
+                                borderColor: 'rgb(54, 162, 235)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        unit: 'minute',
+                                        tooltipFormat: 'yyyy-MM-dd HH:mm:ss',
+                                        displayFormats: {
+                                            minute: 'yyyy-MM-dd HH:mm:ss'
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Time'
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    suggestedMin: Math.min(...heartRates, ...oxygenLevels) - 10,
+                                    suggestedMax: Math.max(...heartRates, ...oxygenLevels) + 10,
+                                }
+                            },
+                            onClick: (evt, activeElements) => {
+                                if (activeElements.length > 0) {
+                                    const chart = activeElements[0].element.$context.chart;
+                                    const index = activeElements[0].index;
+                                    const clickedLabel = chart.data.labels[index];
+
+                                    // Filter data based on the clicked label (time)
+                                    const filteredData = data.filter(item => new Date(item.DateTime).toISOString() === clickedLabel);
+
+                                    // Clear the existing table data
+                                    tableBody.innerHTML = '';
+
+                                    // Populate the table with filtered data
+                                    filteredData.forEach(item => {
+                                        const row = document.createElement('tr');
+                                        row.innerHTML = `
+                                            <td>${new Date(item.DateTime).toISOString()}</td>
+                                            <td>${item.HealthData.HeartRate}</td>
+                                            <td>${item.HealthData.OxygenLevel}</td>
+                                            <td>${item.HealthData.AccelerometerData.Ax}</td>
+                                            <td>${item.HealthData.AccelerometerData.Ay}</td>
+                                            <td>${item.HealthData.AccelerometerData.Az}</td>
+                                        `;
+                                        tableBody.appendChild(row);
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                    $('#daterange').daterangepicker({
+                        timePicker: true,
+                        timePicker24Hour: true,
+                        startDate: moment().startOf('day'),
+                        endDate: moment().endOf('day'),
+                        locale: {
+                            format: 'YYYY-MM-DD HH:mm:ss'
+                        }
+                    }, function(start, end, label) {
+                        const startDate = start.toISOString();
+                        const endDate = end.toISOString();
+                        console.log(`New date range selected: ${startDate} to ${endDate}`);
+
+                        const filteredLabels = labels.filter(label => label >= startDate && label <= endDate);
+                        const filteredHeartRates = heartRates.filter((value, index) => labels[index] >= startDate && labels[index] <= endDate);
+                        const filteredOxygenLevels = oxygenLevels.filter((value, index) => labels[index] >= startDate && labels[index] <= endDate);
+
+                        healthChart.data.datasets[0].data = filteredHeartRates.map((value, index) => ({ x: filteredLabels[index], y: value }));
+                        healthChart.data.datasets[1].data = filteredOxygenLevels.map((value, index) => ({ x: filteredLabels[index], y: value }));
+                        healthChart.options.scales.y.suggestedMin = Math.min(...filteredHeartRates, ...filteredOxygenLevels) - 10;
+                        healthChart.options.scales.y.suggestedMax = Math.max(...filteredHeartRates, ...filteredOxygenLevels) + 10;
+                        healthChart.update();
+                    });
+                })
+                .catch(error => console.error('Error fetching health data:', error));
+        });
+    </script>
+</body>
+</html>
