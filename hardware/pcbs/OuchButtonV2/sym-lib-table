@@ -1,4 +1,6 @@
 (sym_lib_table
   (version 7)
-  (lib (name "RT9080-33GJ5")(type "KiCad")(uri "D:/KiCADLib/2024-08-12_03-33-05.kicad_sym")(options "")(descr ""))
+  (lib (name "RT9080-33GJ5")(type "KiCad")(uri "D:/KiCADLib/RT9080_33GJ5/KiCADv6/2024-08-26_02-10-13.kicad_sym")(options "")(descr ""))
+  (lib (name "AFE4404YZPT")(type "KiCad")(uri "D:/KiCADLib/AFE4404YZPT/KiCADv6/2024-08-26_00-56-58.kicad_sym")(options "")(descr ""))
+  (lib (name "SFH_7072")(type "KiCad")(uri "D:/KiCADLib/SFH_7072/KiCADv6/2024-08-26_02-07-30.kicad_sym")(options "")(descr ""))
 )
