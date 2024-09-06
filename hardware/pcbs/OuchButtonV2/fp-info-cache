@@ -1,4 +1,4 @@
-23827985866449403
+23829711243546700
 AFE4404YZPT
 YZP15_TEX
 
@@ -63345,6 +63345,13 @@ net tie solder jumper bridged
 Jumper
 SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm
 SMD Solder Jumper, 1x1.5mm Pads, 0.3mm gap, open
+solder jumper open
+0
+2
+2
+Jumper
+SolderJumper-2_P1.3mm_Open_RoundedPad0.5x1.5mm
+SMD Solder Jumper, 1x1.5mm, rounded Pads, 0.3mm gap, open
 solder jumper open
 0
 2
