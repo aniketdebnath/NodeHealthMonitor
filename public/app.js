@@ -13,6 +13,23 @@ socket.on('healthDataUpdate', function(data) {
     }
 });
 
+// Listen for prediction results and update the prediction section
+socket.on('predictionResult', function(data) {
+    console.log('Prediction result received:', data);
+
+    // Update SVM Prediction
+    document.getElementById('svm-prediction').textContent = data.predictions.svm_prediction;
+    document.getElementById('svm-confidence').textContent = `Confidence: ${data.predictions.svm_confidence.toFixed(2)}`;
+
+    // Update Random Forest Prediction
+    document.getElementById('rf-prediction').textContent = data.predictions.rf_prediction;
+    document.getElementById('rf-confidence').textContent = `Confidence: ${data.predictions.rf_confidence.toFixed(2)}`;
+
+    // Update KNN Prediction
+    document.getElementById('knn-prediction').textContent = data.predictions.knn_prediction;
+    document.getElementById('knn-confidence').textContent = `Confidence: ${data.predictions.knn_confidence.toFixed(2)}`;
+});
+
 function updateData(elementId, value, label) {
     const element = document.getElementById(elementId);
     const content = `<h2>${label}</h2><p>Value: ${value}</p>`;

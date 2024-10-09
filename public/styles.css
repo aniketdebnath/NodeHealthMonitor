@@ -6,7 +6,7 @@ body, html {
     background: #f4f4f9;
     color: #333;
     height: 100%;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-x: hidden;
 }
 
 header {
@@ -63,48 +63,7 @@ header {
     box-shadow: 0 4px 8px rgba(0,0,0,0.10);
 }
 
-.daterange-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.daterange-container label {
-    padding-top: 10px;
-    padding-right: 10px;
-
-}
-
-
-.daterange-container button {
-    margin-left: 10px;
-    padding: 10px 20px;
-    background-color: #0275d8;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.daterange-container button:hover {
-    background-color: #0256a7;
-}
-
-.chart-container {
-    width: 80%;
-    margin-bottom: 20px;
-}
-
-.chart-container canvas {
-    width: 100% !important;
-    height: 500px !important;
-}
-
-.table-container {
-    width: 100%;
-}
-
+/* Data Block and Prediction Section Styling */
 .data-block {
     background: #e9f5ff;
     margin: 20px 0;
@@ -115,40 +74,39 @@ header {
     text-align: center;
 }
 
-h1, h2 {
-    color: #0275d8;
+/* Prediction Results Styling */
+.predictions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
 }
 
-p {
-    font-size: 16px;
-    color: #666;
-}
-
-/* Scoped Table styles */
-.table-container table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-.table-container table, .table-container th, .table-container td {
-    border: 1px solid #ddd;
-}
-
-.table-container th, .table-container td {
-    padding: 12px;
+.prediction-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
     text-align: center;
 }
 
-.table-container th {
-    background-color: #e0f7fa;
-    font-weight: bold;
+.prediction-card:hover {
+    transform: scale(1.05);
 }
 
-.table-container tr:nth-child {
-    background-color: #b3e5fc;
+.prediction-card h3 {
+    font-size: 20px;
+    color: #0275d8;
 }
 
-.table-container tr:hover {
-    background-color: #81d4fa;
+.prediction-card p {
+    font-size: 24px;
+    color: #333;
+}
+
+.prediction-card small {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
 }

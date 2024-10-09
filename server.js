@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const mongoose = require('mongoose');
 const HealthData = require('./health-data'); // Assuming this is your Mongoose model
+const axios = require('axios');
 
 const app = express();
 const server = http.createServer(app);
@@ -42,12 +43,29 @@ io.on('connection', async (socket) => {
         console.error('Error fetching latest data:', err);
     }
 
+// Watch the MongoDB collection for any new insertions or updates
     const changeStream = HealthData.watch();
 
-    changeStream.on('change', (change) => {
-        if (change.operationType === 'insert' || change.operationType === 'update') {
-            console.log('New or updated data:', change.fullDocument);
-            socket.emit('healthDataUpdate', change.fullDocument);
+    changeStream.on('change', async (change) => {
+        if (change.operationType === 'insert') {
+            console.log('New PPG data inserted:', change.fullDocument);
+
+            const ppgData = change.fullDocument.GreenLED;
+
+            try {
+                // Make a request to FastAPI to process the new PPG data
+                const response = await axios.post('http://localhost:8000/process_and_detect', {
+                    GreenLED: ppgData
+                });
+
+                console.log('FastAPI response:', response.data);
+
+                // Emit the FastAPI prediction result to all connected clients in real-time via Socket.IO
+                io.emit('predictionResult', { ...change.fullDocument, predictions: response.data });
+                console.log('Prediction result sent to clients');
+            } catch (err) {
+                console.error('Error processing PPG data with FastAPI:', err);
+            }
         }
     });
 
